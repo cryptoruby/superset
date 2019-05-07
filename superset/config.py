@@ -72,13 +72,24 @@ CUSTOM_SECURITY_MANAGER = None
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 # ---------------------------------------------------------
 
+
+def get_env_variable(var_name, default=None):
+    """Get the environment variable or raise exception."""
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        if default is not None:
+            return default
+        else:
+            error_msg = 'The environment variable {} was missing, abort...'\
+                        .format(var_name)
+            raise EnvironmentError(error_msg)
+
 # Your App secret key
-SECRET_KEY = '\2\1thisismyscretkey\1\2\e\y\y\h'  # noqa
+SECRET_KEY = get_env_variable('SECRET_KEY')
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(DATA_DIR, 'superset.db')
-# SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
-# SQLALCHEMY_DATABASE_URI = 'postgresql://root:password@localhost/myapp'
+SQLALCHEMY_DATABASE_URI = get_env_variable('SQLALCHEMY_DATABASE_URI')
 
 # In order to hook up a custom password store for all SQLACHEMY connections
 # implement a function that takes a single argument of type 'sqla.engine.url',
